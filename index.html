@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAKEHASHI ASIA inc.</title>
+    
+    <!-- 必要なライブラリをCDNから読み込み -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Framer Motion -->
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+
+    <style>
+        /* カスタムアニメーション定義 */
+        @keyframes scanlines {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+        .animate-scanlines {
+            animation: scanlines 8s linear infinite;
+        }
+        @keyframes glitch-1 {
+            0% { clip-path: inset(20% 0 80% 0); }
+            20% { clip-path: inset(60% 0 10% 0); }
+            40% { clip-path: inset(40% 0 50% 0); }
+            60% { clip-path: inset(80% 0 5% 0); }
+            80% { clip-path: inset(10% 0 70% 0); }
+            100% { clip-path: inset(30% 0 20% 0); }
+        }
+        @keyframes glitch-2 {
+            0% { clip-path: inset(10% 0 60% 0); }
+            20% { clip-path: inset(30% 0 10% 0); }
+            40% { clip-path: inset(80% 0 5% 0); }
+            60% { clip-path: inset(40% 0 40% 0); }
+            80% { clip-path: inset(70% 0 20% 0); }
+            100% { clip-path: inset(20% 0 50% 0); }
+        }
+        .animate-glitch-1 {
+            animation: glitch-1 2.5s infinite linear alternate-reverse;
+        }
+        .animate-glitch-2 {
+            animation: glitch-2 3s infinite linear alternate-reverse;
+        }
+        ::selection {
+            background: #00ff41;
+            color: #000;
+        }
+        body {
+            /* システムカーソルは表示したままにする */
+            cursor: default; 
+            background-color: #020202;
+            color: #e0e0e0;
+        }
+        /* スクロールバーのカスタマイズ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020202; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00ff41; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00cc33; 
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { motion, useScroll, useTransform, AnimatePresence } = window.Motion;
+
+        // --- アイコンコンポーネント (Lucideの代わり) ---
+        // 単一ファイルで動くようにSVGを直接定義
+        const Icon = ({ children, className, size = 24 }) => (
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width={size} 
+                height={size} 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className={className}
+            >
+                {children}
+            </svg>
+        );
+
+        const Icons = {
+            Terminal: (props) => <Icon {...props}><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></Icon>,
+            Shield: (props) => <Icon {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></Icon>,
+            Server: (props) => <Icon {...props}><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></Icon>,
+            Mail: (props) => <Icon {...props}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></Icon>,
+            Lock: (props) => <Icon {...props}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></Icon>,
+            Code: (props) => <Icon {...props}><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></Icon>,
+            Cpu: (props) => <Icon {...props}><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></Icon>,
+            ExternalLink: (props) => <Icon {...props}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></Icon>,
+            Menu: (props) => <Icon {...props}><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></Icon>,
+            X: (props) => <Icon {...props}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></Icon>,
+            Globe: (props) => <Icon {...props}><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></Icon>,
+            Zap: (props) => <Icon {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></Icon>,
+            FileText: (props) => <Icon {...props}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></Icon>,
+        };
+
+        // --- 多言語データ ---
+        const content = {
+          jp: {
+            nav: { products: "Products", philosophy: "Philosophy", contact: "Contact" },
+            hero: {
+              status: "SYSTEM ONLINE // ENCRYPTED CONNECTION ESTABLISHED",
+              title_1: "GrapheneOS",
+              title_2: "Linux Based",
+              subtitle: "静寂と、堅牢。",
+              desc: "あなたの情報は、誰にも触れさせない。",
+              cta: "INITIALIZE_CONTACT"
+            },
+            endorsement: {
+              title: "INTELLIGENCE_REPORT",
+              quote: "「もし私が今日、スマートフォンを設定するとしたら、GrapheneOSを使うだろう。」",
+              author: "Edward Snowden",
+              role: "元NSA局員 / 内部告発者",
+              context: "プライバシーとセキュリティの専門家として、GrapheneOSの堅牢性を公に推奨。"
+            },
+            products: {
+              reveil: {
+                title: "Re:Veil",
+                sub: "SECURE MOBILE ARCHITECTURE",
+                desc: "Androidから、'監視'だけを引く。Googleプレイ開発者サービスを排除し、OSレベルでトラッキングを無効化。余計な通信が走らない「素」のAndroid体験。",
+                specs: ["GrapheneOS", "De-Googled", "Sandboxed API"]
+              },
+              renas: {
+                title: "Re:NAS",
+                sub: "PRIVATE CLOUD FORTRESS",
+                desc: "「サポート終了」は、廃棄の理由にならない。Windows 10の役目を終えた名機を、Linuxベースで軽量・堅牢にリビルド。AES暗号化された自宅要塞。",
+                specs: ["Debian/Linux", "AES-256", "Self-Hosted"]
+              }
+            },
+            philosophy: {
+              title: "CORE_VALUES",
+              items: [
+                { id: "01", title: "Code is Law.", desc: "ブラックボックスを許容しない。世界中の開発者によって監査されたオープンソース技術のみを採用。" },
+                { id: "02", title: "Silicon Never Dies.", desc: "企業の論理で廃棄される資源に、ハッカーの論理で新たな価値を与える。" },
+                { id: "03", title: "Zero Knowledge.", desc: "私たちですら、あなたのデータには触れない。完全なデータ主権をお約束します。" }
+              ]
+            },
+            contact: {
+              title: "ENCRYPTED_CHANNEL",
+              desc: "製品の詳細仕様、導入に関するご相談は、暗号化メールにて。",
+              alert: "WARNING: SECURITY PROTOCOL ACTIVE. NO SNS SUPPORT."
+            }
+          },
+          en: {
+            nav: { products: "Products", philosophy: "Philosophy", contact: "Contact" },
+            hero: {
+              status: "SYSTEM ONLINE // ENCRYPTED CONNECTION ESTABLISHED",
+              title_1: "GrapheneOS",
+              title_2: "Linux Based",
+              subtitle: "Silence & Fortitude.",
+              desc: "Your data remains untouched by anyone.",
+              cta: "INITIALIZE_CONTACT"
+            },
+            endorsement: {
+              title: "INTELLIGENCE_REPORT",
+              quote: "\"If I were configuring a smartphone today, I'd use GrapheneOS.\"",
+              author: "Edward Snowden",
+              role: "Former NSA Intelligence Contractor",
+              context: "Publicly endorsing the robustness of GrapheneOS as a privacy and security expert."
+            },
+            products: {
+              reveil: {
+                title: "Re:Veil",
+                sub: "SECURE MOBILE ARCHITECTURE",
+                desc: "Subtract 'Surveillance' from Android. We eliminate Google Play Services and disable tracking at the OS level. Pure Android experience.",
+                specs: ["GrapheneOS", "De-Googled", "Sandboxed API"]
+              },
+              renas: {
+                title: "Re:NAS",
+                sub: "PRIVATE CLOUD FORTRESS",
+                desc: "\"End of Support\" is not a reason for disposal. We rebuild legacy machines into lightweight, robust Linux servers. AES-encrypted home fortress.",
+                specs: ["Debian/Linux", "AES-256", "Self-Hosted"]
+              }
+            },
+            philosophy: {
+              title: "CORE_VALUES",
+              items: [
+                { id: "01", title: "Code is Law.", desc: "We do not tolerate black boxes. We only adopt open-source technologies audited by developers worldwide." },
+                { id: "02", title: "Silicon Never Dies.", desc: "We give new value with hacker logic to resources discarded by corporate logic." },
+                { id: "03", title: "Zero Knowledge.", desc: "Even we cannot touch your data. We promise complete data sovereignty." }
+              ]
+            },
+            contact: {
+              title: "ENCRYPTED_CHANNEL",
+              desc: "Contact us via encrypted email for detailed specs.",
+              alert: "WARNING: SECURITY PROTOCOL ACTIVE. NO SNS SUPPORT."
+            }
+          }
+        };
+
+        // --- Custom Components ---
+
+        const Scanlines = () => (
+            <div className="pointer-events-none fixed inset-0 z-[100] overflow-hidden h-full w-full">
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#00ff41]/[0.03] to-transparent bg-[length:100%_4px] animate-scanlines"></div>
+            </div>
+        );
+
+        const GlitchText = ({ text, className = "" }) => (
+            <div className={`relative inline-block group ${className}`}>
+                <span className="relative z-10">{text}</span>
+                <span className="absolute top-0 left-0 -z-10 w-full h-full text-[#00ff41] opacity-0 group-hover:opacity-70 animate-glitch-1 translate-x-[2px] clip-path-inset-1">
+                    {text}
+                </span>
+                <span className="absolute top-0 left-0 -z-10 w-full h-full text-[#ff00ea] opacity-0 group-hover:opacity-70 animate-glitch-2 -translate-x-[2px] clip-path-inset-2">
+                    {text}
+                </span>
+            </div>
+        );
+
+        // マウスストーカー (システムカーソルは表示したまま)
+        const MouseStalker = () => {
+            const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
+            const [isHovering, setIsHovering] = useState(false);
+
+            useEffect(() => {
+                const updateMousePosition = (e) => {
+                    setMousePosition({ x: e.clientX, y: e.clientY });
+                };
+                
+                const handleMouseOver = (e) => {
+                    const target = e.target;
+                    if (
+                        target.tagName === 'BUTTON' || 
+                        target.tagName === 'A' || 
+                        target.closest('.interactive') ||
+                        target.closest('button') ||
+                        target.closest('a')
+                    ) {
+                        setIsHovering(true);
+                    } else {
+                        setIsHovering(false);
+                    }
+                };
+
+                window.addEventListener('mousemove', updateMousePosition);
+                window.addEventListener('mouseover', handleMouseOver);
+                return () => {
+                    window.removeEventListener('mousemove', updateMousePosition);
+                    window.removeEventListener('mouseover', handleMouseOver);
+                };
+            }, []);
+
+            return (
+                <div 
+                    className="fixed z-[9999] pointer-events-none hidden md:block"
+                    style={{ 
+                        left: mousePosition.x, 
+                        top: mousePosition.y,
+                        transform: 'translate(-50%, -50%)' 
+                    }}
+                >
+                    <div 
+                        className={`rounded-full bg-[#00ff41]/40 border border-[#00ff41] shadow-[0_0_15px_#00ff41] transition-all duration-200 ease-out backdrop-blur-[1px]
+                        ${isHovering ? 'w-12 h-12 opacity-80' : 'w-4 h-4 opacity-60'}`}
+                    ></div>
+                </div>
+            );
+        };
+
+        const CyberButton = ({ children, onClick, className = "" }) => (
+            <button 
+                onClick={onClick}
+                className={`relative px-8 py-4 font-mono font-bold uppercase tracking-widest text-[#00ff41] bg-transparent overflow-hidden group interactive ${className}`}
+            >
+                <div className="absolute inset-0 border border-[#00ff41] skew-x-[-10deg] bg-black/50 backdrop-blur-sm group-hover:bg-[#00ff41] transition-colors duration-300"></div>
+                <div className="absolute top-0 right-0 w-2 h-2 bg-[#00ff41] transform translate-x-1 -translate-y-1"></div>
+                <div className="absolute bottom-0 left-0 w-2 h-2 bg-[#00ff41] transform -translate-x-1 translate-y-1"></div>
+                <span className="relative z-10 flex items-center gap-2 group-hover:text-black transition-colors duration-300">
+                    {children}
+                </span>
+            </button>
+        );
+
+        // --- ブートシーケンス ---
+        const BootSequence = () => {
+            const [lines, setLines] = useState([]);
+            
+            useEffect(() => {
+                const sequence = [
+                    "INITIALIZING KERNEL...",
+                    "LOADING SECURITY MODULES...",
+                    "BYPASSING FIREWALLS...",
+                    "ESTABLISHING SECURE CONNECTION...",
+                    "ACCESS GRANTED."
+                ];
+                
+                let delay = 0;
+                sequence.forEach((line, i) => {
+                    setTimeout(() => {
+                        setLines(prev => [...prev, line]);
+                    }, delay);
+                    delay += Math.random() * 500 + 300;
+                });
+            }, []);
+
+            return (
+                <div className="fixed inset-0 bg-black text-[#00ff41] font-mono p-8 z-[99999] flex flex-col justify-end pb-20">
+                    {lines.map((line, i) => (
+                        <div key={i} className="mb-1 text-sm md:text-lg opacity-80">&gt; {line}</div>
+                    ))}
+                    <div className="w-4 h-6 bg-[#00ff41] animate-pulse mt-2"></div>
+                </div>
+            );
+        };
+
+        // --- メインコンポーネント ---
+        const KakehashiAsiaUltimate = () => {
+            const [lang, setLang] = useState('jp');
+            const [isLoading, setIsLoading] = useState(true);
+            const [activeSection, setActiveSection] = useState('home');
+            const [scrolled, setScrolled] = useState(false);
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+            const t = content[lang];
+
+            useEffect(() => {
+                const timer = setTimeout(() => setIsLoading(false), 2500);
+                const scrollHandler = () => setScrolled(window.scrollY > 50);
+                window.addEventListener('scroll', scrollHandler);
+                return () => {
+                    clearTimeout(timer);
+                    window.removeEventListener('scroll', scrollHandler);
+                };
+            }, []);
+
+            const toggleLang = () => setLang(prev => prev === 'jp' ? 'en' : 'jp');
+            
+            const scrollTo = (id) => {
+                setIsMenuOpen(false);
+                const el = document.getElementById(id);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                    setActiveSection(id);
+                }
+            };
+
+            const SectionHeader = ({ number, title, align = "left" }) => (
+                <div className={`mb-20 flex flex-col ${align === "center" ? "items-center" : "items-start"}`}>
+                    <span className="text-[#00ff41] font-bold text-6xl opacity-20 font-mono -mb-8 ml-2 select-none">{number}</span>
+                    <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter z-10 uppercase">
+                        {title}
+                        <span className="text-[#00ff41] animate-pulse">_</span>
+                    </h2>
+                    <div className={`h-1 bg-[#00ff41] mt-4 ${align === "center" ? "w-20" : "w-32"}`}></div>
+                </div>
+            );
+
+            const ProductCard = ({ data, icon, img }) => (
+                <motion.div 
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8 }}
+                    className="group relative bg-[#0a0a0a] border border-gray-800 hover:border-[#00ff41] transition-all duration-500 overflow-hidden interactive"
+                >
+                    {/* Tech Specs Overlay */}
+                    <div className="absolute inset-0 bg-black/90 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex flex-col justify-center items-center p-8 text-center backdrop-blur-sm">
+                        <h4 className="text-[#00ff41] text-xl font-bold mb-6 tracking-widest border-b border-[#00ff41] pb-2">TECH_SPECS</h4>
+                        <ul className="space-y-4 font-mono text-sm">
+                            {data.specs.map((spec, i) => (
+                                <li key={i} className="flex items-center gap-2 text-white">
+                                    <span className="text-[#00ff41]">&gt;</span> {spec}
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="mt-8 text-xs text-gray-500">ENCRYPTION LEVEL: MILITARY</div>
+                    </div>
+
+                    <div className="h-64 relative overflow-hidden border-b border-gray-800">
+                        <div className="absolute inset-0 bg-[#00ff41]/20 mix-blend-overlay z-10"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent z-10"></div>
+                        <img src={img} alt={data.title} className="w-full h-full object-cover grayscale contrast-125 group-hover:scale-110 transition-transform duration-700" />
+                        
+                        <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur border border-[#00ff41]/30 p-2 rounded">
+                            {React.cloneElement(icon, { className: "text-[#00ff41] w-6 h-6" })}
+                        </div>
+                    </div>
+
+                    <div className="p-8">
+                        <div className="flex justify-between items-end mb-4">
+                            <h3 className="text-3xl font-bold text-white group-hover:text-[#00ff41] transition-colors">{data.title}</h3>
+                            <span className="text-[10px] text-gray-500 border border-gray-800 px-2 py-1 rounded">VER. 2.0</span>
+                        </div>
+                        <p className="text-[#00ff41] text-xs font-bold tracking-widest mb-6">{data.sub}</p>
+                        <p className="text-gray-400 leading-relaxed text-sm mb-6 border-l-2 border-[#00ff41]/20 pl-4 group-hover:border-[#00ff41] transition-colors">
+                            {data.desc}
+                        </p>
+                        <div className="flex justify-end">
+                            <Icons.ExternalLink className="text-gray-600 group-hover:text-[#00ff41] transition-colors" size={20} />
+                        </div>
+                    </div>
+                </motion.div>
+            );
+
+            const PhilosophyCard = ({ item, idx }) => (
+                <motion.div 
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: idx * 0.1 }}
+                    className="flex flex-col md:flex-row gap-6 relative group interactive"
+                >
+                    <div className="hidden md:block absolute left-[-29px] top-0 bottom-0 w-[1px] bg-[#00ff41]/20 group-hover:bg-[#00ff41] transition-colors">
+                        <div className="absolute top-0 left-[-4px] w-[9px] h-[9px] bg-black border border-[#00ff41] rounded-full"></div>
+                    </div>
+
+                    <div className="flex-shrink-0">
+                        <span className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-[#00ff41] to-transparent opacity-50 font-mono">
+                            {item.id}
+                        </span>
+                    </div>
+                    
+                    <div>
+                        <h4 className="text-2xl font-bold text-white mb-4 group-hover:translate-x-2 transition-transform duration-300">
+                            <span className="text-[#00ff41] mr-2 opacity-0 group-hover:opacity-100 transition-opacity">&gt;</span>
+                            {item.title}
+                        </h4>
+                        <p className="text-gray-400 leading-loose max-w-xl group-hover:text-gray-200 transition-colors">
+                            {item.desc}
+                        </p>
+                    </div>
+                </motion.div>
+            );
+
+            if (isLoading) return <BootSequence />;
+
+            return (
+                <div className="relative min-h-screen font-mono overflow-x-hidden">
+                    <MouseStalker />
+                    <Scanlines />
+                    
+                    {/* HUD Elements */}
+                    <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-40 p-4 md:p-8 pt-24 md:pt-28 flex flex-col justify-between border-[0px] border-[#00ff41]/20">
+                        <div className="flex justify-between items-start">
+                            <div className="text-[10px] text-[#00ff41]/50 flex flex-col gap-1">
+                                <span>SECURE_CONN: <span className="text-[#00ff41] animate-pulse">ACTIVE</span></span>
+                                <span>ENCRYPTION: AES-256-GCM</span>
+                            </div>
+                            <div className="text-[10px] text-[#00ff41]/50 text-right">
+                                <span>SYS_TIME: {new Date().toLocaleTimeString()}</span>
+                                <br />
+                                <span>LOC: JP-EAST-1</span>
+                            </div>
+                        </div>
+                        <div className="flex justify-between items-end">
+                            <div className="h-16 w-1 bg-gradient-to-t from-[#00ff41] to-transparent opacity-50"></div>
+                        </div>
+                    </div>
+
+                    {/* Navigation */}
+                    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-black/90 backdrop-blur border-b border-[#00ff41]/30 py-3' : 'py-6'}`}>
+                        <div className="container mx-auto px-6 flex justify-between items-center">
+                            <button onClick={() => scrollTo('home')} className="flex items-center gap-2 group interactive">
+                                <div className="relative w-8 h-8 flex items-center justify-center bg-[#00ff41]/10 border border-[#00ff41] group-hover:bg-[#00ff41] transition-colors">
+                                    <Icons.Terminal className="w-5 h-5 text-[#00ff41] group-hover:text-black" />
+                                </div>
+                                <div className="flex flex-col items-start leading-none">
+                                    <span className="text-lg font-bold tracking-tighter text-white">KAKEHASHI_ASIA</span>
+                                    <span className="text-[10px] text-[#00ff41] tracking-[0.2em]">CORPORATION</span>
+                                </div>
+                            </button>
+
+                            <div className="hidden md:flex items-center gap-8">
+                                {['Products', 'Philosophy', 'Contact'].map((item, idx) => (
+                                    <button 
+                                        key={item} 
+                                        onClick={() => scrollTo(item.toLowerCase())}
+                                        className={`text-xs font-bold tracking-widest uppercase hover:text-[#00ff41] transition-colors interactive relative group ${activeSection === item.toLowerCase() ? 'text-[#00ff41]' : 'text-gray-500'}`}
+                                    >
+                                        <span className="mr-1 opacity-50">0{idx + 1}.</span>{t.nav[item.toLowerCase()]}
+                                        <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-[#00ff41] transition-all duration-300 group-hover:w-full"></span>
+                                    </button>
+                                ))}
+                                <button 
+                                    onClick={toggleLang} 
+                                    className="interactive flex items-center gap-2 px-3 py-1 border border-[#00ff41]/50 text-xs hover:bg-[#00ff41]/20 transition-all text-[#00ff41]"
+                                >
+                                    <Icons.Globe size={12} />
+                                    <span>{lang === 'jp' ? 'JP' : 'EN'}</span>
+                                </button>
+                            </div>
+                            
+                            <button className="md:hidden text-[#00ff41] interactive" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                                {isMenuOpen ? <Icons.X /> : <Icons.Menu />}
+                            </button>
+                        </div>
+
+                        <AnimatePresence>
+                            {isMenuOpen && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    className="md:hidden absolute top-full left-0 right-0 bg-black/95 border-b border-[#00ff41]/50 p-6 flex flex-col gap-6 backdrop-blur-lg"
+                                >
+                                    {['Products', 'Philosophy', 'Contact'].map((item, idx) => (
+                                        <button
+                                            key={item}
+                                            onClick={() => scrollTo(item.toLowerCase())}
+                                            className="text-left py-2 hover:text-[#00ff41] border-l-2 border-transparent hover:border-[#00ff41] pl-4 transition-all text-white font-bold tracking-widest"
+                                        >
+                                            0{idx + 1}. {t.nav[item.toLowerCase()]}
+                                        </button>
+                                    ))}
+                                    <div className="h-[1px] bg-[#00ff41]/20 w-full"></div>
+                                    <button 
+                                        onClick={toggleLang} 
+                                        className="flex items-center gap-3 text-[#00ff41] font-bold"
+                                    >
+                                        <Icons.Globe size={16} />
+                                        LANGUAGE: <span className="bg-[#00ff41]/20 px-2 rounded">{lang === 'jp' ? 'JP' : 'EN'}</span>
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </nav>
+
+                    <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
+                        <div className="absolute inset-0 z-0">
+                            <div className="absolute inset-0 bg-[#020202]/80 z-10 mix-blend-multiply"></div>
+                            <video 
+                                autoPlay loop muted playsInline 
+                                className="w-full h-full object-cover opacity-30 grayscale contrast-125"
+                                style={{ filter: 'hue-rotate(90deg) contrast(1.2)' }}
+                            >
+                                <source src="https://assets.mixkit.co/videos/preview/mixkit-server-room-with-many-blinking-lights-2030-large.mp4" type="video/mp4" />
+                            </video>
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-[#020202]"></div>
+                        </div>
+
+                        <div className="container mx-auto px-6 relative z-20 flex flex-col items-start">
+                            <motion.div 
+                                initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1 }}
+                                className="mb-4 flex items-center gap-2 text-[#00ff41] text-xs font-bold tracking-[0.2em] border border-[#00ff41]/30 px-3 py-1 bg-black/50 backdrop-blur"
+                            >
+                                <div className="w-2 h-2 bg-[#00ff41] animate-pulse rounded-full"></div>
+                                {t.hero.status}
+                            </motion.div>
+
+                            <h1 className="text-5xl md:text-8xl font-black text-white leading-none mb-6 tracking-tighter mix-blend-screen">
+                                <GlitchText text={t.hero.title_1} />
+                                <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-500 to-white">{t.hero.title_2}</span>
+                            </h1>
+
+                            <motion.div 
+                                initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.5, duration: 1 }}
+                                className="w-24 h-1 bg-[#00ff41] mb-8 origin-left"
+                            ></motion.div>
+
+                            <p className="text-xl md:text-2xl text-gray-400 mb-10 max-w-2xl leading-relaxed">
+                                {t.hero.subtitle}<br />
+                                <span className="text-white bg-[#00ff41]/10 px-1">{t.hero.desc}</span>
+                            </p>
+
+                            <CyberButton onClick={() => scrollTo('contact')}>
+                                {t.hero.cta} <Icons.Terminal size={18} />
+                            </CyberButton>
+                        </div>
+                    </section>
+
+                    <section className="py-20 px-6 bg-[#050505] relative border-b border-[#00ff41]/10">
+                        <div className="container mx-auto max-w-6xl">
+                            <div className="flex flex-col md:flex-row items-center gap-12 bg-[#0a0a0a] border border-[#00ff41]/30 p-8 md:p-12 relative overflow-hidden">
+                                <div className="absolute -top-4 -right-4 border-2 border-[#00ff41]/20 px-4 py-2 rotate-12 text-[#00ff41]/20 font-black text-4xl uppercase pointer-events-none select-none">
+                                    CONFIDENTIAL
+                                </div>
+
+                                <div className="w-full md:w-1/3 flex-shrink-0 relative group">
+                                    <div className="absolute inset-0 border border-[#00ff41] translate-x-2 translate-y-2 opacity-50 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform"></div>
+                                    <div className="relative h-64 w-full overflow-hidden grayscale contrast-125 filter">
+                                        <div className="absolute inset-0 bg-[#00ff41]/10 mix-blend-overlay z-10"></div>
+                                        <img 
+                                            src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&q=80&w=800" 
+                                            alt="Edward Snowden Concept" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute bottom-0 left-0 bg-black/80 px-2 py-1 text-[10px] text-[#00ff41] w-full border-t border-[#00ff41]/50">
+                                            SUBJECT: {t.endorsement.author.toUpperCase()}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="w-full md:w-2/3">
+                                    <div className="flex items-center gap-2 mb-4 text-[#00ff41] text-xs font-bold tracking-widest uppercase">
+                                        <Icons.FileText size={14} /> {t.endorsement.title}
+                                    </div>
+                                    <blockquote className="text-2xl md:text-3xl font-bold text-white mb-6 leading-relaxed font-sans italic border-l-4 border-[#00ff41] pl-6">
+                                        {t.endorsement.quote}
+                                    </blockquote>
+                                    <div className="text-gray-400">
+                                        <span className="text-white font-bold block mb-1">{t.endorsement.author}</span>
+                                        <span className="text-sm text-[#00ff41]">{t.endorsement.role}</span>
+                                        <p className="text-xs text-gray-600 mt-2 border-t border-gray-800 pt-2">
+                                            {t.endorsement.context}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="products" className="py-32 px-6 relative bg-[#050505]">
+                        <div className="absolute top-0 right-0 w-1/3 h-full bg-[#00ff41]/5 blur-[150px] pointer-events-none"></div>
+                        <div className="container mx-auto max-w-7xl relative z-10">
+                            <SectionHeader number="01" title={t.nav.products} />
+
+                            <div className="grid lg:grid-cols-2 gap-12">
+                                <ProductCard 
+                                    data={t.products.reveil}
+                                    icon={<Icons.Shield className="w-12 h-12" />}
+                                    img="https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?auto=format&fit=crop&q=80&w=800"
+                                />
+                                <ProductCard 
+                                    data={t.products.renas}
+                                    icon={<Icons.Server className="w-12 h-12" />}
+                                    img="https://images.unsplash.com/photo-1597852074816-d933c7d2b988?auto=format&fit=crop&q=80&w=1000"
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="philosophy" className="py-32 px-6 bg-[#020202] relative border-y border-[#00ff41]/10">
+                        <div className="container mx-auto max-w-6xl">
+                            <SectionHeader number="02" title={t.nav.philosophy} />
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+                                <div className="md:col-span-4 sticky top-32 h-fit">
+                                    <h3 className="text-4xl font-bold text-white mb-8"><span className="text-[#00ff41]">///</span> {t.philosophy.title}</h3>
+                                    <p className="text-gray-500 text-sm leading-loose">
+                                        We are not just selling hardware.<br/>
+                                        We are providing <span className="text-[#00ff41]">Sovereignty</span>.
+                                    </p>
+                                    <div className="mt-12 hidden md:flex flex-col gap-4">
+                                        <Icons.Cpu className="text-[#00ff41] w-8 h-8 opacity-50" />
+                                        <Icons.Code className="text-[#00ff41] w-8 h-8 opacity-50" />
+                                        <Icons.Lock className="text-[#00ff41] w-8 h-8 opacity-50" />
+                                    </div>
+                                </div>
+                                
+                                <div className="md:col-span-8 flex flex-col gap-24">
+                                    {t.philosophy.items.map((item, idx) => (
+                                        <PhilosophyCard key={idx} item={item} idx={idx} />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="contact" className="py-32 px-6 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                        <div className="container mx-auto max-w-4xl text-center relative z-10">
+                            <SectionHeader number="03" title={t.nav.contact} align="center" />
+                            
+                            <div className="bg-[#0a0a0a] border border-[#00ff41]/30 p-12 relative overflow-hidden group hover:border-[#00ff41] transition-colors duration-500">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-[#00ff41] shadow-[0_0_20px_#00ff41]"></div>
+                                
+                                <div className="relative z-10 flex flex-col items-center gap-8">
+                                    <div className="w-20 h-20 bg-[#00ff41]/10 rounded-full flex items-center justify-center border border-[#00ff41]/50 animate-pulse">
+                                        <Icons.Mail className="w-10 h-10 text-[#00ff41]" />
+                                    </div>
+
+                                    <div>
+                                        <h4 className="text-[#00ff41] tracking-[0.3em] text-sm mb-2 font-bold">{t.contact.title}</h4>
+                                        <p className="text-gray-400 mb-8">{t.contact.desc}</p>
+                                        
+                                        <a 
+                                            href="mailto:Kakehashi.asia@proton.me" 
+                                            className="interactive text-3xl md:text-5xl font-black text-white hover:text-[#00ff41] transition-colors duration-300 break-all flex flex-col md:flex-row items-center justify-center gap-4"
+                                        >
+                                            <GlitchText text="Kakehashi.asia" />
+                                            <span className="text-[#00ff41]">@proton.me</span>
+                                        </a>
+                                    </div>
+
+                                    <div className="w-full h-[1px] bg-[#00ff41]/20 my-4"></div>
+
+                                    <div className="flex items-center gap-2 text-red-500 text-xs font-bold border border-red-900/50 bg-red-900/10 px-4 py-2 rounded">
+                                        <Icons.Zap size={14} /> {t.contact.alert}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <footer className="bg-black py-8 border-t border-[#00ff41]/20 text-[10px] tracking-widest text-gray-600 font-mono">
+                        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div>
+                                &copy; {new Date().getFullYear()} KAKEHASHI ASIA INC. // ALL RIGHTS RESERVED.
+                            </div>
+                            <div className="flex gap-6">
+                                <span className="hover:text-[#00ff41] cursor-pointer interactive">PRIVACY_PROTOCOL</span>
+                                <span className="hover:text-[#00ff41] cursor-pointer interactive">TERMS_OF_ENGAGEMENT</span>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<KakehashiAsiaUltimate />);
+    </script>
+</body>
+</html>
