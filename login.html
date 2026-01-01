@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Re:Veil Phone - ACCESS RESTRICTED</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #020617;
+            --card-color: #0f172a;
+            --accent-color: #22c55e; /* Matrix Green */
+            --error-color: #ef4444;
+            --text-color: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'JetBrains Mono', monospace;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Cyberpunk Grid Background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(34, 197, 94, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 197, 94, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+        }
+
+        .login-container {
+            background-color: var(--card-color);
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            color: #fff;
+        }
+
+        p.subtitle {
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            margin-bottom: 5px;
+            color: #94a3b8;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #020617;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            color: var(--accent-color);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="password"]:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background-color: #4ade80;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+        }
+
+        .error-msg {
+            color: var(--error-color);
+            font-size: 0.8rem;
+            margin-top: 15px;
+            height: 20px; /* Space reservation */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .show-error {
+            opacity: 1;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .icon-lock {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="icon-lock">
+            <i class="fa-solid fa-lock"></i>
+            <!-- Simple CSS Lock Icon if FontAwesome fails -->
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+        </div>
+        <h1>ACCESS RESTRICTED</h1>
+        <p class="subtitle">RE:VEIL PHONE MANUAL</p>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label>ACCESS CODE</label>
+                <input type="password" id="passwordInput" placeholder="Enter Password" autocomplete="off">
+            </div>
+            <button type="submit">UNLOCK <span style="font-size:1.2em">→</span></button>
+        </form>
+
+        <div id="errorMsg" class="error-msg">ACCESS DENIED: INCORRECT CODE</div>
+    </div>
+
+    <script>
+        // 設定：ここにパスワードを設定してください
+        const CORRECT_PASS = "r2e0v2e5i1l2";
+        
+        // 設定：移動先のマニュアルファイル名（同じフォルダに置いてください）
+        const MANUAL_URL = "reveil_manual.html";
+
+        const form = document.getElementById('loginForm');
+        const input = document.getElementById('passwordInput');
+        const errorMsg = document.getElementById('errorMsg');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // フォームの送信をキャンセル
+            
+            const enteredPass = input.value;
+
+            if (enteredPass === CORRECT_PASS) {
+                // 正解の場合
+                errorMsg.style.color = "#22c55e";
+                errorMsg.innerText = "ACCESS GRANTED. REDIRECTING...";
+                errorMsg.classList.add('show-error');
+                
+                // 1秒後に移動
+                setTimeout(() => {
+                    window.location.href = MANUAL_URL;
+                }, 800);
+            } else {
+                // 不正解の場合
+                errorMsg.style.color = "#ef4444";
+                errorMsg.innerText = "ACCESS DENIED: INCORRECT CODE";
+                errorMsg.classList.add('show-error');
+                input.value = ""; // 入力をクリア
+                
+                // アニメーションのリセット
+                setTimeout(() => {
+                    errorMsg.classList.remove('show-error');
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

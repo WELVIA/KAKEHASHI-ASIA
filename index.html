@@ -114,96 +114,96 @@
 
         // --- 多言語データ ---
         const content = {
-          jp: {
-            nav: { products: "Products", philosophy: "Philosophy", contact: "Contact" },
-            hero: {
-              status: "SYSTEM ONLINE // ENCRYPTED CONNECTION ESTABLISHED",
-              title_1: "GrapheneOS",
-              title_2: "Linux Based",
-              subtitle: "静寂と、堅牢。",
-              desc: "あなたの情報は、誰にも触れさせない。",
-              cta: "INITIALIZE_CONTACT"
+            jp: {
+                nav: { products: "Products", philosophy: "Philosophy", contact: "Contact" },
+                hero: {
+                    status: "SYSTEM ONLINE // ENCRYPTED CONNECTION ESTABLISHED",
+                    title_1: "GrapheneOS",
+                    title_2: "Linux Based",
+                    subtitle: "静寂と、堅牢。",
+                    desc: "あなたの情報は、誰にも触れさせない。",
+                    cta: "INITIALIZE_CONTACT"
+                },
+                endorsement: {
+                    title: "INTELLIGENCE_REPORT",
+                    quote: "「もし私が今日、スマートフォンを設定するとしたら、GrapheneOSを使うだろう。」",
+                    author: "Edward Snowden",
+                    role: "元NSA局員 / 内部告発者",
+                    context: "プライバシーとセキュリティの専門家として、GrapheneOSの堅牢性を公に推奨。"
+                },
+                products: {
+                    reveil: {
+                        title: "Re:Veil",
+                        sub: "SECURE MOBILE ARCHITECTURE",
+                        desc: "Androidから、'監視'だけを引く。Googleプレイ開発者サービスを排除し、OSレベルでトラッキングを無効化。余計な通信が走らない「素」のAndroid体験。",
+                        specs: ["GrapheneOS", "De-Googled", "Sandboxed API"]
+                    },
+                    renas: {
+                        title: "Re:NAS",
+                        sub: "PRIVATE CLOUD FORTRESS",
+                        desc: "「サポート終了」は、廃棄の理由にならない。Windows 10の役目を終えた名機を、Linuxベースで軽量・堅牢にリビルド。AES暗号化された自宅要塞。",
+                        specs: ["Debian/Linux", "AES-256", "Self-Hosted"]
+                    }
+                },
+                philosophy: {
+                    title: "CORE_VALUES",
+                    items: [
+                        { id: "01", title: "Code is Law.", desc: "ブラックボックスを許容しない。世界中の開発者によって監査されたオープンソース技術のみを採用。" },
+                        { id: "02", title: "Silicon Never Dies.", desc: "企業の論理で廃棄される資源に、ハッカーの論理で新たな価値を与える。" },
+                        { id: "03", title: "Zero Knowledge.", desc: "私たちですら、あなたのデータには触れない。完全なデータ主権をお約束します。" }
+                    ]
+                },
+                contact: {
+                    title: "ENCRYPTED_CHANNEL",
+                    desc: "製品の詳細仕様、導入に関するご相談は、暗号化メールにて。",
+                    alert: "WARNING: SECURITY PROTOCOL ACTIVE. NO SNS SUPPORT."
+                }
             },
-            endorsement: {
-              title: "INTELLIGENCE_REPORT",
-              quote: "「もし私が今日、スマートフォンを設定するとしたら、GrapheneOSを使うだろう。」",
-              author: "Edward Snowden",
-              role: "元NSA局員 / 内部告発者",
-              context: "プライバシーとセキュリティの専門家として、GrapheneOSの堅牢性を公に推奨。"
-            },
-            products: {
-              reveil: {
-                title: "Re:Veil",
-                sub: "SECURE MOBILE ARCHITECTURE",
-                desc: "Androidから、'監視'だけを引く。Googleプレイ開発者サービスを排除し、OSレベルでトラッキングを無効化。余計な通信が走らない「素」のAndroid体験。",
-                specs: ["GrapheneOS", "De-Googled", "Sandboxed API"]
-              },
-              renas: {
-                title: "Re:NAS",
-                sub: "PRIVATE CLOUD FORTRESS",
-                desc: "「サポート終了」は、廃棄の理由にならない。Windows 10の役目を終えた名機を、Linuxベースで軽量・堅牢にリビルド。AES暗号化された自宅要塞。",
-                specs: ["Debian/Linux", "AES-256", "Self-Hosted"]
-              }
-            },
-            philosophy: {
-              title: "CORE_VALUES",
-              items: [
-                { id: "01", title: "Code is Law.", desc: "ブラックボックスを許容しない。世界中の開発者によって監査されたオープンソース技術のみを採用。" },
-                { id: "02", title: "Silicon Never Dies.", desc: "企業の論理で廃棄される資源に、ハッカーの論理で新たな価値を与える。" },
-                { id: "03", title: "Zero Knowledge.", desc: "私たちですら、あなたのデータには触れない。完全なデータ主権をお約束します。" }
-              ]
-            },
-            contact: {
-              title: "ENCRYPTED_CHANNEL",
-              desc: "製品の詳細仕様、導入に関するご相談は、暗号化メールにて。",
-              alert: "WARNING: SECURITY PROTOCOL ACTIVE. NO SNS SUPPORT."
+            en: {
+                nav: { products: "Products", philosophy: "Philosophy", contact: "Contact" },
+                hero: {
+                    status: "SYSTEM ONLINE // ENCRYPTED CONNECTION ESTABLISHED",
+                    title_1: "GrapheneOS",
+                    title_2: "Linux Based",
+                    subtitle: "Silence & Fortitude.",
+                    desc: "Your data remains untouched by anyone.",
+                    cta: "INITIALIZE_CONTACT"
+                },
+                endorsement: {
+                    title: "INTELLIGENCE_REPORT",
+                    quote: "\"If I were configuring a smartphone today, I'd use GrapheneOS.\"",
+                    author: "Edward Snowden",
+                    role: "Former NSA Intelligence Contractor",
+                    context: "Publicly endorsing the robustness of GrapheneOS as a privacy and security expert."
+                },
+                products: {
+                    reveil: {
+                        title: "Re:Veil",
+                        sub: "SECURE MOBILE ARCHITECTURE",
+                        desc: "Subtract 'Surveillance' from Android. We eliminate Google Play Services and disable tracking at the OS level. Pure Android experience.",
+                        specs: ["GrapheneOS", "De-Googled", "Sandboxed API"]
+                    },
+                    renas: {
+                        title: "Re:NAS",
+                        sub: "PRIVATE CLOUD FORTRESS",
+                        desc: "\"End of Support\" is not a reason for disposal. We rebuild legacy machines into lightweight, robust Linux servers. AES-encrypted home fortress.",
+                        specs: ["Debian/Linux", "AES-256", "Self-Hosted"]
+                    }
+                },
+                philosophy: {
+                    title: "CORE_VALUES",
+                    items: [
+                        { id: "01", title: "Code is Law.", desc: "We do not tolerate black boxes. We only adopt open-source technologies audited by developers worldwide." },
+                        { id: "02", title: "Silicon Never Dies.", desc: "We give new value with hacker logic to resources discarded by corporate logic." },
+                        { id: "03", title: "Zero Knowledge.", desc: "Even we cannot touch your data. We promise complete data sovereignty." }
+                    ]
+                },
+                contact: {
+                    title: "ENCRYPTED_CHANNEL",
+                    desc: "Contact us via encrypted email for detailed specs.",
+                    alert: "WARNING: SECURITY PROTOCOL ACTIVE. NO SNS SUPPORT."
+                }
             }
-          },
-          en: {
-            nav: { products: "Products", philosophy: "Philosophy", contact: "Contact" },
-            hero: {
-              status: "SYSTEM ONLINE // ENCRYPTED CONNECTION ESTABLISHED",
-              title_1: "GrapheneOS",
-              title_2: "Linux Based",
-              subtitle: "Silence & Fortitude.",
-              desc: "Your data remains untouched by anyone.",
-              cta: "INITIALIZE_CONTACT"
-            },
-            endorsement: {
-              title: "INTELLIGENCE_REPORT",
-              quote: "\"If I were configuring a smartphone today, I'd use GrapheneOS.\"",
-              author: "Edward Snowden",
-              role: "Former NSA Intelligence Contractor",
-              context: "Publicly endorsing the robustness of GrapheneOS as a privacy and security expert."
-            },
-            products: {
-              reveil: {
-                title: "Re:Veil",
-                sub: "SECURE MOBILE ARCHITECTURE",
-                desc: "Subtract 'Surveillance' from Android. We eliminate Google Play Services and disable tracking at the OS level. Pure Android experience.",
-                specs: ["GrapheneOS", "De-Googled", "Sandboxed API"]
-              },
-              renas: {
-                title: "Re:NAS",
-                sub: "PRIVATE CLOUD FORTRESS",
-                desc: "\"End of Support\" is not a reason for disposal. We rebuild legacy machines into lightweight, robust Linux servers. AES-encrypted home fortress.",
-                specs: ["Debian/Linux", "AES-256", "Self-Hosted"]
-              }
-            },
-            philosophy: {
-              title: "CORE_VALUES",
-              items: [
-                { id: "01", title: "Code is Law.", desc: "We do not tolerate black boxes. We only adopt open-source technologies audited by developers worldwide." },
-                { id: "02", title: "Silicon Never Dies.", desc: "We give new value with hacker logic to resources discarded by corporate logic." },
-                { id: "03", title: "Zero Knowledge.", desc: "Even we cannot touch your data. We promise complete data sovereignty." }
-              ]
-            },
-            contact: {
-              title: "ENCRYPTED_CHANNEL",
-              desc: "Contact us via encrypted email for detailed specs.",
-              alert: "WARNING: SECURITY PROTOCOL ACTIVE. NO SNS SUPPORT."
-            }
-          }
         };
 
         // --- Custom Components ---
@@ -698,6 +698,22 @@
                                     <div className="flex items-center gap-2 text-red-500 text-xs font-bold border border-red-900/50 bg-red-900/10 px-4 py-2 rounded">
                                         <Icons.Zap size={14} /> {t.contact.alert}
                                     </div>
+
+                                    {/* --- Manual Download Button (New) --- */}
+                                    <div className="mt-12 w-full flex flex-col items-center border-t border-[#00ff41]/10 pt-10">
+                                        <h5 className="text-[#00ff41] text-xs font-bold tracking-widest mb-6 opacity-70">
+                                            // USER_RESOURCE
+                                            EXISTING USERS
+                                        </h5>
+                                        <CyberButton onClick={() => window.location.href = 'login.html'} className="w-full md:w-auto justify-center">
+                                            <Icons.Lock size={16} /> Re:Veil Phone MANUAL
+                                        </CyberButton>
+                                        <p className="text-gray-600 text-[10px] mt-3 tracking-wider">
+                                            ACCESS RESTRICTED: PASSWORD REQUIRED
+                                        </p>
+                                    </div>
+                                    {/* ------------------------------------ */}
+
                                 </div>
                             </div>
                         </div>

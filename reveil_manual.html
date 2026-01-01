@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Re:Veil Phone Guidebook</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent-green: #22c55e;
+            --accent-cyan: #06b6d4;
+            --accent-red: #ef4444;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #020617;
+            color: var(--text-main);
+            font-family: 'Noto Sans JP', sans-serif;
+            line-height: 1.8;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Lang Switcher */
+        .lang-switcher {
+            position: absolute;
+            top: 20px;
+            right: 0;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .lang-btn {
+            background: transparent;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 5px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .lang-btn.active, .lang-btn:hover {
+            background: var(--accent-cyan);
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 60px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            letter-spacing: -2px;
+            background: linear-gradient(90deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--accent-green);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .intro-text {
+            color: var(--text-muted);
+            margin-top: 20px;
+            font-size: 1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Sections */
+        section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-cyan);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        h2 i {
+            color: var(--accent-cyan);
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #cbd5e1;
+        }
+
+        /* Lists */
+        ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+
+        li::marker {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        /* Feature Boxes */
+        .priority-box {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tag.high { background: rgba(34, 197, 94, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .tag.med { background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
+        .tag.low { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+
+        .code-block {
+            background-color: #000;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: var(--accent-cyan);
+        }
+
+        .app-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .app-item {
+            background: var(--bg-dark);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Top 10 List */
+        .top-10-list {
+            list-style: none;
+            margin: 0;
+            counter-reset: top-list;
+        }
+
+        .top-10-list li {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 20px;
+        }
+
+        .top-10-list li::before {
+            counter-increment: top-list;
+            content: counter(top-list);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 35px;
+            height: 35px;
+            background: var(--accent-cyan);
+            color: #000;
+            font-weight: bold;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-family: 'JetBrains Mono';
+        }
+
+        .top-10-title {
+            font-weight: bold;
+            color: #fff;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            section { padding: 20px; }
+            .app-list { grid-template-columns: 1fr; }
+            .lang-switcher { top: 10px; right: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLang('jp')">JP</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+
+    <header>
+        <h1>RE:VEIL PHONE</h1>
+        <div class="subtitle" data-i18n="subtitle">設定ガイドブック [Advanced Edition]</div>
+        <div class="intro-text">
+            <p data-i18n="intro_1">ようこそ、Re:Veil Phoneへ。</p>
+            <p data-i18n="intro_2">この端末は、あなたのデジタル・プライバシーを取り戻すためのツールです。しかし、ただ持っているだけでは意味がありません。「誰に、どの情報を渡すか」をあなた自身がコントロールするための正しい設定を行って初めて、その真価を発揮します。</p>
+            <p data-i18n="intro_3">本ガイドに従って、強固なプライバシー環境を構築してください。</p>
+        </div>
+    </header>
+
+    <!-- SECTION 1 -->
+    <section>
+        <h2><i class="fa-solid fa-power-off"></i> <span data-i18n="sec1_title">1. 初期セットアップ</span></h2>
+        <p data-i18n="sec1_desc">まずはベースとなる環境を整えます。</p>
+        
+        <h3 data-i18n="sec1_step1_title">起動と言語設定</h3>
+        <ol>
+            <li data-i18n="sec1_step1_text">電源ON > <strong>「English」</strong>をタップ > <strong>「日本語」</strong>を選択 > <strong>「開始」</strong>。</li>
+        </ol>
+
+        <h3 data-i18n="sec1_step2_title">Wi-Fi接続</h3>
+        <ol>
+            <li data-i18n="sec1_step2_text1">ネットワークに接続します。</li>
+            <li><span style="color: var(--accent-red);" data-i18n="sec1_step2_text2">※ SIMカードは設定が全て完了してから挿入することを推奨します。</span></li>
+        </ol>
+
+        <h3 data-i18n="sec1_step3_title">基本設定のスキップ</h3>
+        <ol>
+            <li data-i18n="sec1_step3_text">指紋認証やPIN設定は後ほど行います。セットアップウィザード内の設定は一旦すべて<strong>スキップ</strong>してください。</li>
+        </ol>
+    </section>
+
+    <!-- SECTION 2 -->
+    <section>
+        <h2><i class="fa-solid fa-box-open"></i> <span data-i18n="sec2_title">2. アプリ導入の「3つの鉄則」</span></h2>
+        <p data-i18n="sec2_desc">Re:Veil Phoneでは、Google Playストアに安易に頼りません。以下の優先順位でアプリを探します。</p>
+
+        <div class="priority-box">
+            <span class="tag high" data-i18n="tag_high">優先度: 高</span>
+            <span style="font-weight: bold; font-size: 1.1em;" data-i18n="f_droid_title">F-Droid (エフドロイド)</span>
+            <p style="margin-top:10px;" data-i18n="f_droid_desc">世界中のオープンソース（中身が公開されている安全な）アプリだけが集まるストアです。</p>
+            <ol>
+                <li data-i18n="f_droid_step1">ブラウザ「Vanadium」を開き、検索サイトで「F-Droid」と検索。</li>
+                <li data-i18n="f_droid_step2">公式サイトから <strong>「F-Droidをダウンロード」</strong> をタップし、APKファイルをインストール。</li>
+                <li data-i18n="f_droid_step3">F-Droidを開き、リポジトリの更新を待ちます。</li>
+                <li data-i18n="f_droid_step4">ここにあるアプリ（シンプルカレンダー、K-9 Mailなど）は、追跡機能が含まれておらず最も安全です。</li>
+            </ol>
+        </div>
+
+        <div class="priority-box">
+            <span class="tag med" data-i18n="tag_med">優先度: 中</span>
+            <span style="font-weight: bold; font-size: 1.1em;" data-i18n="aurora_title">Aurora Store (オーロラストア)</span>
+            <p style="margin-top:10px;" data-i18n="aurora_desc">「Google Playにあるアプリを使いたいが、Googleアカウントでログインしたくない」場合に最適です。</p>
+            <ol>
+                <li data-i18n="aurora_step1">先ほど入れた <strong>F-Droid</strong> を開きます。</li>
+                <li data-i18n="aurora_step2">検索窓で <strong>「Aurora Store」</strong> を検索し、インストールします。</li>
+                <li data-i18n="aurora_step3">Aurora Storeを起動し、利用規約に同意。</li>
+                <li data-i18n="aurora_step4">ログイン画面で <strong>「匿名 (Anonymous)」</strong> を選択します。</li>
+            </ol>
+            <p style="font-size: 0.9em; color: var(--accent-cyan);"><i class="fa-solid fa-circle-info"></i> <span data-i18n="aurora_info">仕組み: Google Playストアに「誰か」としてアクセスし、アプリだけをダウンロードできます。Googleにあなたの履歴は残りません。</span></p>
+        </div>
+
+        <div class="priority-box">
+            <span class="tag low" data-i18n="tag_low">優先度: 低</span>
+            <span style="font-weight: bold; font-size: 1.1em;" data-i18n="play_title">Google Play ストア (ログイン禁止運用)</span>
+            <p style="margin-top:10px;" data-i18n="play_desc">上記の2つで動かないアプリがある場合のみ、公式のストア機能を導入します。</p>
+            <ol>
+                <li data-i18n="play_step1">ホーム画面の <strong>「Apps」</strong> を開きます。</li>
+                <li data-i18n="play_step2"><strong>「Google Play Services」</strong> を選択し、<strong>「Install」</strong> を実行します（3つのシステムアプリが入ります）。</li>
+            </ol>
+            <div style="border-left: 3px solid var(--accent-red); padding-left: 15px; margin-top: 10px;">
+                <strong><i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="play_warn_title">重要ルール:</span></strong>
+                <ul style="list-style: none; margin-left: 0;">
+                    <li data-i18n="play_warn_1">・原則、ログインはしません。</li>
+                    <li data-i18n="play_warn_2">・Playストア自体は「アプリの通知を受け取るため」や「位置情報を動かすため」だけにバックグラウンドで機能させます。</li>
+                    <li data-i18n="play_warn_3">・アプリの更新やダウンロードは、可能な限り Aurora Store 経由で行います。</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3 -->
+    <section>
+        <h2><i class="fa-solid fa-shield-halved"></i> <span data-i18n="sec3_title">3. ネットワーク・ファイアウォール</span></h2>
+        <p data-i18n="sec3_desc">Re:Veil Phoneでは、「通信する必要がないアプリ」のインターネット権限を剥奪します。</p>
+
+        <h3 data-i18n="gboard_title">日本語入力ソフト (Gboard) の完全オフライン化</h3>
+        <p data-i18n="gboard_desc">Google製のキーボード「Gboard」は変換精度が高いですが、入力内容を送信されるリスクがあります。通信を遮断して「ただのキーボード」として使います。</p>
+        <ol>
+            <li data-i18n="gboard_step1">Aurora Store から <strong>「Gboard」</strong> をインストール。</li>
+            <li data-i18n="gboard_step2"><strong>「設定」 > 「アプリ」 > 「Gboard」</strong> を開く。</li>
+            <li data-i18n="gboard_step3"><strong>「権限」 > 「ネットワーク」</strong> をタップ。</li>
+            <li data-i18n="gboard_step4">スイッチを <strong>OFF</strong> にする。</li>
+        </ol>
+        <p style="color: var(--accent-green);">→ <span data-i18n="gboard_result">これで、あなたが打った文字情報が外部に漏れることは物理的に不可能になります。</span></p>
+
+        <h3 data-i18n="blocklist_title">通信を切るべき純正アプリ一覧</h3>
+        <p><span data-i18n="blocklist_desc">以下のアプリも同様の手順で通信を遮断してください。</span><br>
+        <span class="code-block" data-i18n="blocklist_path">設定 > アプリ > 権限 > ネットワークOFF</span></p>
+        
+        <div class="app-list">
+            <div class="app-item"><i class="fa-solid fa-calculator"></i><br><span data-i18n="app_calc">電卓 (Calculator)</span></div>
+            <div class="app-item"><i class="fa-solid fa-camera"></i><br><span data-i18n="app_cam">カメラ (Camera)</span></div>
+            <div class="app-item"><i class="fa-solid fa-clock"></i><br><span data-i18n="app_clock">時計 (Clock)</span></div>
+            <div class="app-item"><i class="fa-solid fa-address-book"></i><br><span data-i18n="app_contact">連絡先 (Contacts)</span></div>
+            <div class="app-item"><i class="fa-solid fa-image"></i><br><span data-i18n="app_gallery">ギャラリー (Gallery)</span></div>
+            <div class="app-item"><i class="fa-solid fa-file-pdf"></i><br><span data-i18n="app_pdf">PDF Viewer</span></div>
+        </div>
+    </section>
+
+    <!-- SECTION 4 -->
+    <section>
+        <h2><i class="fa-solid fa-user-secret"></i> <span data-i18n="sec4_title">4. 匿名化と暗号化</span></h2>
+
+        <h3 data-i18n="proton_title">Proton VPN (キルスイッチ設定)</h3>
+        <p data-i18n="proton_desc">通信内容を暗号化し、IPアドレス（ネット上の住所）を隠します。</p>
+        <ol>
+            <li data-i18n="proton_step1">Aurora Store等から <strong>「Proton VPN」</strong> をインストール。</li>
+            <li data-i18n="proton_step2">アカウントを作成（無料版でOK）し、接続します。</li>
+            <li><strong data-i18n="proton_step3_title">キルスイッチ (Kill Switch) の設定:</strong>
+                <ul>
+                    <li data-i18n="proton_step3_1">Proton VPNの設定メニューにある <strong>「Kill Switch」</strong> をONにします。</li>
+                    <li data-i18n="proton_step3_2">またはAndroid設定 > ネットワーク > VPN > Proton VPN (歯車) > <strong>「常時接続VPN」</strong> と <strong>「VPN非接続時の接続をブロック」</strong> をON。</li>
+                </ul>
+            </li>
+        </ol>
+        <p><strong data-i18n="proton_effect_title">効果:</strong> <span data-i18n="proton_effect_desc">VPNが切れた瞬間、スマホの全通信を遮断します。「うっかり生のIPアドレスで通信してしまった」という事故を防ぎます。</span></p>
+
+        <h3 data-i18n="orbot_title">Orbot (Torネットワーク)</h3>
+        <p data-i18n="orbot_desc">さらに高度な匿名性が必要な場合に使用します。</p>
+        <ol>
+            <li data-i18n="orbot_step1">F-Droid または Aurora Store から <strong>「Orbot」</strong> をインストール。</li>
+            <li data-i18n="orbot_step2">「VPNモード」を有効にし、玉ねぎアイコンをタップ。</li>
+            <li data-i18n="orbot_step3">通信速度は落ちますが、通信経路が世界中に分散され、追跡が極めて困難になります。</li>
+        </ol>
+    </section>
+
+    <!-- SECTION 5 -->
+    <section>
+        <h2><i class="fa-solid fa-star"></i> <span data-i18n="sec5_title">5. Re:Veil ユーザー推奨設定 Top 10</span></h2>
+        <p data-i18n="sec5_desc">GrapheneOSユーザーコミュニティで推奨される、セキュリティ設定のトップ10です。</p>
+
+        <ul class="top-10-list">
+            <li>
+                <span class="top-10-title" data-i18n="top10_1_title">自動再起動 (Auto-reboot) の短縮</span>
+                <span data-i18n="top10_1_desc">設定 > セキュリティ > 自動再起動。デフォルト72時間を <strong>18時間</strong> に変更。紛失対策の基本。</span>
+            </li>
+            <li>
+                <span class="top-10-title" data-i18n="top10_2_title">PINのスクランブル化</span>
+                <span data-i18n="top10_2_desc">設定 > セキュリティ > PINのスクランブル > ON。指紋跡からのパスコード推測を防止。</span>
+            </li>
+            <li>
+                <span class="top-10-title" data-i18n="top10_3_title">Wi-Fi MACアドレスのランダム化</span>
+                <span data-i18n="top10_3_desc">設定 > ネットワーク > Wi-Fi > (接続先) > プライバシー。「ランダム化されたMACを使用」 を確認。</span>
+            </li>
+            <li>
+                <span class="top-10-title" data-i18n="top10_4_title">USB周辺機器のブロック</span>
+                <span data-i18n="top10_4_desc">設定 > セキュリティ > USBアクセサリ > 「許可しない」。捜査機関等のデータ抽出ツール対策。</span>
+            </li>
+            <li>
+                <span class="top-10-title" data-i18n="top10_5_title">VanadiumのJIT無効化</span>
+                <span data-i18n="top10_5_desc">ブラウザ Vanadium で <span class="code-block">chrome://flags</span> にアクセス > jit で検索 > 「V8 JIT-less mode」 をEnabled。ハッキング耐性強化。</span>
+            </li>
+            <li>
+                <span class="top-10-title" data-i18n="top10_6_title">2G (GSM) の無効化</span>
+                <span data-i18n="top10_6_desc">設定 > ネットワーク > SIM > 「2Gの許可」をOFF。盗聴対策。</span>
+            </li>
+            <li>
+                <span class="top-10-title" data-i18n="top10_7_title">Storage Scopes (ストレージスコープ)</span>
+                <span data-i18n="top10_7_desc">各アプリの権限設定で「ファイル」へのアクセスを 「Storage Scopes」 に限定する。</span>
+            </li>
+            <li>
+                <span class="top-10-title" data-i18n="top10_8_title">Contact Scopes (連絡先スコープ)</span>
+                <span data-i18n="top10_8_desc">LINE等に対し、連絡先へのアクセスを 「Contact Scopes」 で空データまたは特定の人だけに限定する。</span>
+            </li>
+            <li>
+                <span class="top-10-title" data-i18n="top10_9_title">センサー権限のブロック</span>
+                <span data-i18n="top10_9_desc">不要なアプリの「センサー」権限をOFFにし、ジャイロ等による行動検知を防ぐ。</span>
+            </li>
+            <li>
+                <span class="top-10-title" data-i18n="top10_10_title">ユーザープロファイルの分離 (※上級者向け)</span>
+                <span data-i18n="top10_10_desc">設定 > システム > 複数ユーザー。「普段使い用」「銀行用」などでユーザーを分けると、アプリ間のデータ干渉を完全に防げます。興味があれば試してみてください。</span>
+            </li>
+        </ul>
+    </section>
+
+    <!-- SECTION 6 -->
+    <section>
+        <h2><i class="fa-brands fa-google"></i> <span data-i18n="sec6_title">6. Googleアカウントの運用ルール</span></h2>
+        <p data-i18n="sec6_desc">Re:Veil Phoneの理念は「脱Google」ですが、どうしても有料アプリ等でログインが必要な場合のルールです。</p>
+
+        <div style="background: rgba(239,68,68,0.1); padding: 20px; border-radius: 8px; border: 1px solid var(--accent-red);">
+            <h3 style="color: var(--accent-red); margin-top:0;" data-i18n="sec6_rule_title">鉄則: メインのアカウントは使わない</h3>
+            <p data-i18n="sec6_rule_desc">普段PCなどで使っている、個人情報が紐付いたメインのGoogleアカウントでログインしてはいけません。位置情報やアプリ利用履歴が全て紐付いてしまいます。</p>
+        </div>
+
+        <h3 style="color: var(--accent-cyan);" data-i18n="sec6_burner_title">「捨て垢 (Burner Account)」の作成推奨</h3>
+        <p data-i18n="sec6_burner_desc">どうしても必要な場合は、以下の手順で専用アカウントを作成してください。</p>
+        <ol>
+            <li data-i18n="sec6_step1">自宅ではなく、ネットカフェや図書館などのPCを使用する。</li>
+            <li data-i18n="sec6_step2">Tor Browser やプライベートウィンドウを使用する。</li>
+            <li data-i18n="sec6_step3">電話番号認証を回避できる場合のみ作成し、Re:Veil Phone専用の「捨てアカウント」として運用する。</li>
+            <li data-i18n="sec6_step4">課金等はGoogle Playギフトカードを使用し、クレジットカード情報は登録しない。</li>
+        </ol>
+    </section>
+
+    <footer>
+        <p>RE:VEIL PHONE PROJECT</p>
+        <p data-i18n="footer_text">Re:Veil Phoneと共に、自由なインターネットをお楽しみください。</p>
+    </footer>
+
+</div>
+
+<script>
+    const translations = {
+        jp: {
+            subtitle: "設定ガイドブック [Advanced Edition]",
+            intro_1: "ようこそ、Re:Veil Phoneへ。",
+            intro_2: "この端末は、あなたのデジタル・プライバシーを取り戻すためのツールです。しかし、ただ持っているだけでは意味がありません。「誰に、どの情報を渡すか」をあなた自身がコントロールするための正しい設定を行って初めて、その真価を発揮します。",
+            intro_3: "本ガイドに従って、強固なプライバシー環境を構築してください。",
+            sec1_title: "1. 初期セットアップ",
+            sec1_desc: "まずはベースとなる環境を整えます。",
+            sec1_step1_title: "起動と言語設定",
+            sec1_step1_text: "電源ON > <strong>「English」</strong>をタップ > <strong>「日本語」</strong>を選択 > <strong>「開始」</strong>。",
+            sec1_step2_title: "Wi-Fi接続",
+            sec1_step2_text1: "ネットワークに接続します。",
+            sec1_step2_text2: "※ SIMカードは設定が全て完了してから挿入することを推奨します。",
+            sec1_step3_title: "基本設定のスキップ",
+            sec1_step3_text: "指紋認証やPIN設定は後ほど行います。セットアップウィザード内の設定は一旦すべて<strong>スキップ</strong>してください。",
+            sec2_title: "2. アプリ導入の「3つの鉄則」",
+            sec2_desc: "Re:Veil Phoneでは、Google Playストアに安易に頼りません。以下の優先順位でアプリを探します。",
+            tag_high: "優先度: 高",
+            f_droid_title: "F-Droid (エフドロイド)",
+            f_droid_desc: "世界中のオープンソース（中身が公開されている安全な）アプリだけが集まるストアです。",
+            f_droid_step1: "ブラウザ「Vanadium」を開き、検索サイトで「F-Droid」と検索。",
+            f_droid_step2: "公式サイトから <strong>「F-Droidをダウンロード」</strong> をタップし、APKファイルをインストール。",
+            f_droid_step3: "F-Droidを開き、リポジトリの更新を待ちます。",
+            f_droid_step4: "ここにあるアプリ（シンプルカレンダー、K-9 Mailなど）は、追跡機能が含まれておらず最も安全です。",
+            tag_med: "優先度: 中",
+            aurora_title: "Aurora Store (オーロラストア)",
+            aurora_desc: "「Google Playにあるアプリを使いたいが、Googleアカウントでログインしたくない」場合に最適です。",
+            aurora_step1: "先ほど入れた <strong>F-Droid</strong> を開きます。",
+            aurora_step2: "検索窓で <strong>「Aurora Store」</strong> を検索し、インストールします。",
+            aurora_step3: "Aurora Storeを起動し、利用規約に同意。",
+            aurora_step4: "ログイン画面で <strong>「匿名 (Anonymous)」</strong> を選択します。",
+            aurora_info: "仕組み: Google Playストアに「誰か」としてアクセスし、アプリだけをダウンロードできます。Googleにあなたの履歴は残りません。",
+            tag_low: "優先度: 低",
+            play_title: "Google Play ストア (ログイン禁止運用)",
+            play_desc: "上記の2つで動かないアプリがある場合のみ、公式のストア機能を導入します。",
+            play_step1: "ホーム画面の <strong>「Apps」</strong> を開きます。",
+            play_step2: "<strong>「Google Play Services」</strong> を選択し、<strong>「Install」</strong> を実行します（3つのシステムアプリが入ります）。",
+            play_warn_title: "重要ルール:",
+            play_warn_1: "・原則、ログインはしません。",
+            play_warn_2: "・Playストア自体は「アプリの通知を受け取るため」や「位置情報を動かすため」だけにバックグラウンドで機能させます。",
+            play_warn_3: "・アプリの更新やダウンロードは、可能な限り Aurora Store 経由で行います。",
+            sec3_title: "3. ネットワーク・ファイアウォール",
+            sec3_desc: "Re:Veil Phoneでは、「通信する必要がないアプリ」のインターネット権限を剥奪します。",
+            gboard_title: "日本語入力ソフト (Gboard) の完全オフライン化",
+            gboard_desc: "Google製のキーボード「Gboard」は変換精度が高いですが、入力内容を送信されるリスクがあります。通信を遮断して「ただのキーボード」として使います。",
+            gboard_step1: "Aurora Store から <strong>「Gboard」</strong> をインストール。",
+            gboard_step2: "<strong>「設定」 > 「アプリ」 > 「Gboard」</strong> を開く。",
+            gboard_step3: "<strong>「権限」 > 「ネットワーク」</strong> をタップ。",
+            gboard_step4: "スイッチを <strong>OFF</strong> にする。",
+            gboard_result: "これで、あなたが打った文字情報が外部に漏れることは物理的に不可能になります。",
+            blocklist_title: "通信を切るべき純正アプリ一覧",
+            blocklist_desc: "以下のアプリも同様の手順で通信を遮断してください。",
+            blocklist_path: "設定 > アプリ > 権限 > ネットワークOFF",
+            app_calc: "電卓 (Calculator)",
+            app_cam: "カメラ (Camera)",
+            app_clock: "時計 (Clock)",
+            app_contact: "連絡先 (Contacts)",
+            app_gallery: "ギャラリー (Gallery)",
+            app_pdf: "PDF Viewer",
+            sec4_title: "4. 匿名化と暗号化",
+            proton_title: "Proton VPN (キルスイッチ設定)",
+            proton_desc: "通信内容を暗号化し、IPアドレス（ネット上の住所）を隠します。",
+            proton_step1: "Aurora Store等から <strong>「Proton VPN」</strong> をインストール。",
+            proton_step2: "アカウントを作成（無料版でOK）し、接続します。",
+            proton_step3_title: "キルスイッチ (Kill Switch) の設定:",
+            proton_step3_1: "Proton VPNの設定メニューにある <strong>「Kill Switch」</strong> をONにします。",
+            proton_step3_2: "またはAndroid設定 > ネットワーク > VPN > Proton VPN (歯車) > <strong>「常時接続VPN」</strong> と <strong>「VPN非接続時の接続をブロック」</strong> をON。",
+            proton_effect_title: "効果:",
+            proton_effect_desc: "VPNが切れた瞬間、スマホの全通信を遮断します。「うっかり生のIPアドレスで通信してしまった」という事故を防ぎます。",
+            orbot_title: "Orbot (Torネットワーク)",
+            orbot_desc: "さらに高度な匿名性が必要な場合に使用します。",
+            orbot_step1: "F-Droid または Aurora Store から <strong>「Orbot」</strong> をインストール。",
+            orbot_step2: "「VPNモード」を有効にし、玉ねぎアイコンをタップ。",
+            orbot_step3: "通信速度は落ちますが、通信経路が世界中に分散され、追跡が極めて困難になります。",
+            sec5_title: "5. Re:Veil ユーザー推奨設定 Top 10",
+            sec5_desc: "GrapheneOSユーザーコミュニティで推奨される、セキュリティ設定のトップ10です。",
+            top10_1_title: "自動再起動 (Auto-reboot) の短縮",
+            top10_1_desc: "設定 > セキュリティ > 自動再起動。デフォルト72時間を <strong>18時間</strong> に変更。紛失対策の基本。",
+            top10_2_title: "PINのスクランブル化",
+            top10_2_desc: "設定 > セキュリティ > PINのスクランブル > ON。指紋跡からのパスコード推測を防止。",
+            top10_3_title: "Wi-Fi MACアドレスのランダム化",
+            top10_3_desc: "設定 > ネットワーク > Wi-Fi > (接続先) > プライバシー。「ランダム化されたMACを使用」 を確認。",
+            top10_4_title: "USB周辺機器のブロック",
+            top10_4_desc: "設定 > セキュリティ > USBアクセサリ > 「許可しない」。捜査機関等のデータ抽出ツール対策。",
+            top10_5_title: "VanadiumのJIT無効化",
+            top10_5_desc: "ブラウザ Vanadium で <span class=\"code-block\">chrome://flags</span> にアクセス > jit で検索 > 「V8 JIT-less mode」 をEnabled。ハッキング耐性強化。",
+            top10_6_title: "2G (GSM) の無効化",
+            top10_6_desc: "設定 > ネットワーク > SIM > 「2Gの許可」をOFF。盗聴対策。",
+            top10_7_title: "Storage Scopes (ストレージスコープ)",
+            top10_7_desc: "各アプリの権限設定で「ファイル」へのアクセスを 「Storage Scopes」 に限定する。",
+            top10_8_title: "Contact Scopes (連絡先スコープ)",
+            top10_8_desc: "LINE等に対し、連絡先へのアクセスを 「Contact Scopes」 で空データまたは特定の人だけに限定する。",
+            top10_9_title: "センサー権限のブロック",
+            top10_9_desc: "不要なアプリの「センサー」権限をOFFにし、ジャイロ等による行動検知を防ぐ。",
+            top10_10_title: "ユーザープロファイルの分離 (※上級者向け)",
+            top10_10_desc: "設定 > システム > 複数ユーザー。「普段使い用」「銀行用」などでユーザーを分けると、アプリ間のデータ干渉を完全に防げます。興味があれば試してみてください。",
+            sec6_title: "6. Googleアカウントの運用ルール",
+            sec6_desc: "Re:Veil Phoneの理念は「脱Google」ですが、どうしても有料アプリ等でログインが必要な場合のルールです。",
+            sec6_rule_title: "鉄則: メインのアカウントは使わない",
+            sec6_rule_desc: "普段PCなどで使っている、個人情報が紐付いたメインのGoogleアカウントでログインしてはいけません。位置情報やアプリ利用履歴が全て紐付いてしまいます。",
+            sec6_burner_title: "「捨て垢 (Burner Account)」の作成推奨",
+            sec6_burner_desc: "どうしても必要な場合は、以下の手順で専用アカウントを作成してください。",
+            sec6_step1: "自宅ではなく、ネットカフェや図書館などのPCを使用する。",
+            sec6_step2: "Tor Browser やプライベートウィンドウを使用する。",
+            sec6_step3: "電話番号認証を回避できる場合のみ作成し、Re:Veil Phone専用の「捨てアカウント」として運用する。",
+            sec6_step4: "課金等はGoogle Playギフトカードを使用し、クレジットカード情報は登録しない。",
+            footer_text: "Re:Veil Phoneと共に、自由なインターネットをお楽しみください。"
+        },
+        en: {
+            subtitle: "Configuration Guidebook [Advanced Edition]",
+            intro_1: "Welcome to Re:Veil Phone.",
+            intro_2: "This device is a tool to reclaim your digital privacy. However, owning it is not enough. Its true value is realized only when you apply the correct settings to control \"who gets what information.\"",
+            intro_3: "Follow this guide to build a robust privacy environment.",
+            sec1_title: "1. Initial Setup",
+            sec1_desc: "First, let's establish the base environment.",
+            sec1_step1_title: "Startup and Language Settings",
+            sec1_step1_text: "Power ON > Tap <strong>'English'</strong> > Select <strong>'Japanese'</strong> > <strong>'Start'</strong>.",
+            sec1_step2_title: "Wi-Fi Connection",
+            sec1_step2_text1: "Connect to a network.",
+            sec1_step2_text2: "※ It is recommended to insert the SIM card only after all settings are complete.",
+            sec1_step3_title: "Skip Basic Settings",
+            sec1_step3_text: "Fingerprint and PIN setup will be done later. <strong>Skip</strong> all settings in the setup wizard for now.",
+            sec2_title: "2. The 3 Iron Rules of App Installation",
+            sec2_desc: "On Re:Veil Phone, we do not easily rely on the Google Play Store. Search for apps in the following priority order.",
+            tag_high: "Priority: HIGH",
+            f_droid_title: "F-Droid",
+            f_droid_desc: "A store gathering only open-source (safe, publicly visible code) apps from around the world.",
+            f_droid_step1: "Open the 'Vanadium' browser and search for 'F-Droid'.",
+            f_droid_step2: "Tap <strong>'Download F-Droid'</strong> from the official site and install the APK file.",
+            f_droid_step3: "Open F-Droid and wait for the repository to update.",
+            f_droid_step4: "Apps here (Simple Calendar, K-9 Mail, etc.) contain no tracking features and are the safest.",
+            tag_med: "Priority: MED",
+            aurora_title: "Aurora Store",
+            aurora_desc: "Ideal when you 'want to use apps from Google Play but don't want to log in with a Google account'.",
+            aurora_step1: "Open <strong>F-Droid</strong> installed earlier.",
+            aurora_step2: "Search for <strong>'Aurora Store'</strong> in the search bar and install it.",
+            aurora_step3: "Launch Aurora Store and agree to the terms.",
+            aurora_step4: "Select <strong>'Anonymous'</strong> on the login screen.",
+            aurora_info: "Mechanism: Accesses Google Play Store as 'someone else' to download apps only. Your history does not remain with Google.",
+            tag_low: "Priority: LOW",
+            play_title: "Google Play Store (No-Login Policy)",
+            play_desc: "Install the official store functions only if an app doesn't work with the above two methods.",
+            play_step1: "Open <strong>'Apps'</strong> on the home screen.",
+            play_step2: "Select <strong>'Google Play Services'</strong> and execute <strong>'Install'</strong> (3 system apps will be installed).",
+            play_warn_title: "Iron Rules:",
+            play_warn_1: "・In principle, do not log in.",
+            play_warn_2: "・Let Play Store function in the background only for 'receiving app notifications' or 'enabling location services'.",
+            play_warn_3: "・Update or download apps via Aurora Store whenever possible.",
+            sec3_title: "3. Network Firewall",
+            sec3_desc: "On Re:Veil Phone, we revoke internet permissions for 'apps that don't need to communicate'.",
+            gboard_title: "Fully Offline Japanese Input (Gboard)",
+            gboard_desc: "Google's 'Gboard' has high conversion accuracy but risks sending input data. Block communication to use it as 'just a keyboard'.",
+            gboard_step1: "Install <strong>'Gboard'</strong> from Aurora Store.",
+            gboard_step2: "Open <strong>'Settings' > 'Apps' > 'Gboard'</strong>.",
+            gboard_step3: "Tap <strong>'Permissions' > 'Network'</strong>.",
+            gboard_step4: "Toggle the switch <strong>OFF</strong>.",
+            gboard_result: "This makes it physically impossible for your typed information to leak externally.",
+            blocklist_title: "List of Stock Apps to Block",
+            blocklist_desc: "Block communication for the following apps using the same procedure.",
+            blocklist_path: "Settings > Apps > Permissions > Network OFF",
+            app_calc: "Calculator",
+            app_cam: "Camera",
+            app_clock: "Clock",
+            app_contact: "Contacts",
+            app_gallery: "Gallery",
+            app_pdf: "PDF Viewer",
+            sec4_title: "4. Anonymity & Encryption",
+            proton_title: "Proton VPN (Kill Switch Setting)",
+            proton_desc: "Encrypts communication content and hides your IP address (internet address).",
+            proton_step1: "Install <strong>'Proton VPN'</strong> from Aurora Store etc.",
+            proton_step2: "Create an account (free version is fine) and connect.",
+            proton_step3_title: "Kill Switch Setting:",
+            proton_step3_1: "Turn ON <strong>'Kill Switch'</strong> in the Proton VPN settings menu.",
+            proton_step3_2: "Or go to Android Settings > Network > VPN > Proton VPN (gear icon) > Turn ON <strong>'Always-on VPN'</strong> and <strong>'Block connections without VPN'</strong>.",
+            proton_effect_title: "Effect:",
+            proton_effect_desc: "Instantly blocks all phone communication if the VPN disconnects. Prevents accidents where you 'accidentally communicate with your raw IP'.",
+            orbot_title: "Orbot (Tor Network)",
+            orbot_desc: "Use when even higher anonymity is required.",
+            orbot_step1: "Install <strong>'Orbot'</strong> from F-Droid or Aurora Store.",
+            orbot_step2: "Enable 'VPN Mode' and tap the onion icon.",
+            orbot_step3: "Communication speed will drop, but traffic is routed globally, making tracking extremely difficult.",
+            sec5_title: "5. Top 10 Recommended Settings",
+            sec5_desc: "Top 10 security settings recommended by the GrapheneOS user community.",
+            top10_1_title: "Shorten Auto-reboot",
+            top10_1_desc: "Settings > Security > Auto-reboot. Change default 72 hours to <strong>18 hours</strong>. Basic loss protection.",
+            top10_2_title: "PIN Scrambling",
+            top10_2_desc: "Settings > Security > PIN scrambling > ON. Prevents guessing passcode from fingerprint smudges.",
+            top10_3_title: "Wi-Fi MAC Address Randomization",
+            top10_3_desc: "Settings > Network > Wi-Fi > (Network) > Privacy. Confirm 'Use randomized MAC'.",
+            top10_4_title: "Block USB Peripherals",
+            top10_4_desc: "Settings > Security > USB accessories > 'Deny'. Defense against forensic data extraction tools.",
+            top10_5_title: "Disable JIT in Vanadium",
+            top10_5_desc: "Browser Vanadium > Access <span class=\"code-block\">chrome://flags</span> > Search jit > Set 'V8 JIT-less mode' to Enabled. Hardens against hacking.",
+            top10_6_title: "Disable 2G (GSM)",
+            top10_6_desc: "Settings > Network > SIM > 'Allow 2G' OFF. Anti-wiretapping.",
+            top10_7_title: "Storage Scopes",
+            top10_7_desc: "Limit 'File' access in each app's permission settings to 'Storage Scopes'.",
+            top10_8_title: "Contact Scopes",
+            top10_8_desc: "Limit contact access for LINE etc. to 'Contact Scopes' with empty data or specific people only.",
+            top10_9_title: "Block Sensor Permissions",
+            top10_9_desc: "Turn OFF 'Sensors' permission for unnecessary apps to prevent motion tracking.",
+            top10_10_title: "User Profile Separation (Advanced)",
+            top10_10_desc: "Settings > System > Multiple users. Separate users for 'Daily Use' and 'Banking' to completely prevent data interference between apps.",
+            sec6_title: "6. Google Account Protocols",
+            sec6_desc: "Re:Veil Phone's philosophy is 'De-Google', but here are rules if login is absolutely necessary for paid apps.",
+            sec6_rule_title: "Iron Rule: Do Not Use Main Account",
+            sec6_rule_desc: "Do not log in with the main Google account linked to your personal info used on PC etc. Location and app history will be linked.",
+            sec6_burner_title: "Create a 'Burner Account'",
+            sec6_burner_desc: "If absolutely necessary, create a dedicated account using the following steps.",
+            sec6_step1: "Use a PC at a net cafe or library, not at home.",
+            sec6_step2: "Use Tor Browser or Private Window.",
+            sec6_step3: "Create only if phone number verification can be bypassed, and use as a 'Burner Account' dedicated to Re:Veil Phone.",
+            sec6_step4: "Use Google Play Gift Cards for payments; do not register credit card info.",
+            footer_text: "Enjoy a free internet with Re:Veil Phone."
+        }
+    };
+
+    function setLang(lang) {
+        // Update text
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) {
+                el.innerHTML = translations[lang][key];
+            }
+        });
+
+        // Update active button state
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const activeBtn = document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`);
+        if(activeBtn) activeBtn.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
